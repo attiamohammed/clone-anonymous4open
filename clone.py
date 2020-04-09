@@ -76,7 +76,11 @@ def clone_file(url, download, root_url='https://anonymous.4open.science'):
                 plain_data = base64.b64decode(data)
                 with open(file_name, 'wb') as f:
                     f.write(plain_data)
-
+        elif split_href[-1].split('.')[-1] == 'md' :
+            md_file=blob_soup.find_all( "div", {"class":"markdown-body"}) 
+            md_file=html2text.html2text(str(md_file))
+            with open(file_name, 'w') as f:
+                f.write(md_file)
         else:            
             source_code = blob_soup.find('code')
             with open(file_name, 'w') as f:
