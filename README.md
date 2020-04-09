@@ -7,6 +7,7 @@ Only supports Python3.
 ```
 pip install beautifulsoup4
 pip install lxml
+pip install markdownify
 ```
 
 
