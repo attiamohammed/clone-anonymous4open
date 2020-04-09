@@ -62,7 +62,7 @@ def clone_file(url, download, root_url='https://anonymous.4open.science'):
         #print('Clone...  ', file_name, href)
 
         ### Not support clone markdown files now  and LICENSE
-        if check_html(root_url+href) or split_href[-1].split('.')[-1] == 'md' or split_href[-1] =='LICENSE':
+        if check_html(root_url+href)  or split_href[-1] =='LICENSE':
             continue
 
         blob_soup = pull_html(root_url+href)
