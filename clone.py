@@ -16,6 +16,16 @@ def parse_args():
 def create_dir(name):
     if not os.path.exists(name):
         os.mkdir(name)
+        
+def check_html(url):
+    req = urllib2.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    try:
+        response = urllib2.urlopen(req).read()
+    except urllib2.URLError as e:
+        print(e)
+        print(url)
+        return True
+    return False
 
 def pull_html(url):
     req = urllib2.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
@@ -52,13 +62,25 @@ def clone_file(url, download, root_url='https://anonymous.4open.science'):
         #print('Clone...  ', file_name, href)
 
         ### Not support clone markdown files now  and LICENSE
-        if split_href[-1].split('.')[-1] == 'md' or split_href[-1] =='LICENSE':
+        if check_html(root_url+href) or split_href[-1].split('.')[-1] == 'md' or split_href[-1] =='LICENSE':
             continue
 
         blob_soup = pull_html(root_url+href)
-        source_code = blob_soup.find('code')
-        with open(file_name, 'w') as f:
-            f.write(source_code.get_text())
+        if split_href[-1].split('.')[1] in( 'png','jpeg','gif'):
+            for img in blob_soup.select("img[src]"):
+                image_url = img["src"]
+                import base64
+                img_data=image_url
+                head, data = img_data.split(',', 1)
+                file_ext = head.split(';')[0].split('/')[1]
+                plain_data = base64.b64decode(data)
+                with open(file_name, 'wb') as f:
+                    f.write(plain_data)
+
+        else:            
+            source_code = blob_soup.find('code')
+            with open(file_name, 'w') as f:
+                f.write(source_code.get_text())
 
 def clone_dirs(url, folders_url_lis, download, root_url='https://anonymous.4open.science'):
     trees = pull_trees(root_url+url)
